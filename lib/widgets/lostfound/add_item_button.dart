@@ -22,111 +22,234 @@ class AddItemButton extends StatefulWidget {
   State<AddItemButton> createState() => _AddItemButtonState();
 }
 
+// class _AddItemButtonState extends State<AddItemButton> {
+//   @override
+//   Widget build(BuildContext context) {
+//     if (LoginStore().isGuestUser) {
+//       return Container();
+//     }
+//     if (widget.type == "My Ads") {
+//       return Container();
+//     }
+//     return GestureDetector(
+//       onTap: () async {
+//         XFile? xFile;
+//         await showDialog(
+//             context: context,
+//             builder: (BuildContext context) {
+//               return AlertDialog(
+//                   title:
+//                       const Text("From where do you want to take the photo?"),
+//                   content: SingleChildScrollView(
+//                     child: ListBody(
+//                       children: <Widget>[
+//                         GestureDetector(
+//                           child: const Text("Gallery"),
+//                           onTap: () async {
+//                             xFile = await ImagePicker()
+//                                 .pickImage(source: ImageSource.gallery);
+//                             if (!mounted) return;
+//                             Navigator.of(context).pop();
+//                           },
+//                         ),
+//                         const Padding(padding: EdgeInsets.all(8.0)),
+//                         GestureDetector(
+//                           child: const Text("Camera"),
+//                           onTap: () async {
+//                             xFile = await ImagePicker()
+//                                 .pickImage(source: ImageSource.camera);
+//                             if (!mounted) return;
+//                             Navigator.of(context).pop();
+//                           },
+//                         )
+//                       ],
+//                     ),
+//                   ));
+//             });
+
+//         if (!mounted) return;
+//         if (xFile != null) {
+//           var bytes = File(xFile!.path).readAsBytesSync();
+//           var imageSize =
+//               (bytes.lengthInBytes / (1048576)); // dividing by 1024*1024
+//           if (imageSize > 2.5) {
+//             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//                 content: Text(
+//               "Maximum image size can be 2.5 MB",
+//               style: MyFonts.w500,
+//             )));
+//             return;
+//           }
+//           var imageString = base64Encode(bytes);
+//           if (widget.type == "Lost") {
+//             Navigator.of(context).push(MaterialPageRoute(
+//                 builder: (context) => BuySellForm(
+//                       category: "Lost",
+//                       imageString: imageString,
+//                     )));
+//             return;
+//           } else if (widget.type == "Found") {
+//             Navigator.of(context).push(MaterialPageRoute(
+//                 builder: (context) => LostFoundLocationForm(
+//                       imageString: imageString,
+//                     )));
+//           } else {
+//             if (widget.type == "Sell") {
+//               Navigator.of(context).push(MaterialPageRoute(
+//                   builder: (context) => BuySellForm(
+//                         category: "Sell",
+//                         imageString: imageString,
+//                       )));
+//               return;
+//             } else if (widget.type == "Buy") {
+//               Navigator.of(context).push(MaterialPageRoute(
+//                   builder: (context) => BuySellForm(
+//                         category: "Buy",
+//                         imageString: imageString,
+//                       )));
+//               return;
+//             }
+//           }
+//         }
+//       },
+//       child: Container(
+//         margin: const EdgeInsets.only(bottom: 18),
+//         decoration: BoxDecoration(
+//           color: lBlue2,
+//           borderRadius: BorderRadius.circular(20),
+//         ),
+//         child: const Row(
+//           mainAxisSize: MainAxisSize.min,
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             Padding(
+//               padding: EdgeInsets.all(20),
+//               child: Icon(
+//                 FluentIcons.add_32_filled,
+//                 size: 30,
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
 class _AddItemButtonState extends State<AddItemButton> {
   @override
   Widget build(BuildContext context) {
-    if (LoginStore().isGuestUser) {
-      return Container();
-    }
-    if (widget.type == "My Ads") {
+    if (LoginStore().isGuestUser || widget.type == "My Ads") {
       return Container();
     }
     return GestureDetector(
       onTap: () async {
         XFile? xFile;
         await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                  title:
-                      const Text("From where do you want to take the photo?"),
-                  content: SingleChildScrollView(
-                    child: ListBody(
-                      children: <Widget>[
-                        GestureDetector(
-                          child: const Text("Gallery"),
-                          onTap: () async {
-                            xFile = await ImagePicker()
-                                .pickImage(source: ImageSource.gallery);
-                            if (!mounted) return;
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        const Padding(padding: EdgeInsets.all(8.0)),
-                        GestureDetector(
-                          child: const Text("Camera"),
-                          onTap: () async {
-                            xFile = await ImagePicker()
-                                .pickImage(source: ImageSource.camera);
-                            if (!mounted) return;
-                            Navigator.of(context).pop();
-                          },
-                        )
-                      ],
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("From where do you want to take the photo?"),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    GestureDetector(
+                      child: const Text("Gallery"),
+                      onTap: () async {
+                        xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+                        if (!mounted) return;
+                        Navigator.of(context).pop();
+                      },
                     ),
-                  ));
-            });
+                    const Padding(padding: EdgeInsets.all(8.0)),
+                    GestureDetector(
+                      child: const Text("Camera"),
+                      onTap: () async {
+                        xFile = await ImagePicker().pickImage(source: ImageSource.camera);
+                        if (!mounted) return;
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+        );
 
         if (!mounted) return;
         if (xFile != null) {
           var bytes = File(xFile!.path).readAsBytesSync();
-          var imageSize =
-              (bytes.lengthInBytes / (1048576)); // dividing by 1024*1024
+          var imageSize = bytes.lengthInBytes / 1048576;
           if (imageSize > 2.5) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-              "Maximum image size can be 2.5 MB",
-              style: MyFonts.w500,
-            )));
+              content: Text("Maximum image size can be 2.5 MB", style: MyFonts.w500),
+            ));
             return;
           }
           var imageString = base64Encode(bytes);
           if (widget.type == "Lost") {
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => BuySellForm(
-                      category: "Lost",
-                      imageString: imageString,
-                    )));
+                builder: (context) => BuySellForm(category: "Lost", imageString: imageString)));
             return;
-          } else if (widget.type == "Found") {
+          }
+          if (widget.type == "Found") {
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => LostFoundLocationForm(
-                      imageString: imageString,
-                    )));
-          } else {
-            if (widget.type == "Sell") {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => BuySellForm(
-                        category: "Sell",
-                        imageString: imageString,
-                      )));
-              return;
-            } else if (widget.type == "Buy") {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => BuySellForm(
-                        category: "Buy",
-                        imageString: imageString,
-                      )));
-              return;
-            }
+                builder: (context) => LostFoundLocationForm(imageString: imageString)));
+            return;
+          }
+          if (widget.type == "Sell" || widget.type == "Buy") {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) =>
+                    BuySellForm(category: widget.type, imageString: imageString)));
+            return;
           }
         }
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 18),
-        decoration: BoxDecoration(
-          color: lBlue2,
-          borderRadius: BorderRadius.circular(20),
+        height: 56,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        decoration: ShapeDecoration(
+          color: const Color(0xFF148440), // Colors-Green-600
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          shadows: const [
+            BoxShadow(
+              color: Color(0x1E000000),
+              blurRadius: 16,
+              offset: Offset(0, -4),
+              spreadRadius: 0,
+            ),
+          ],
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Icon(
-                FluentIcons.add_32_filled,
-                size: 30,
+            Container(
+              width: 24,
+              height: 24,
+              clipBehavior: Clip.antiAlias,
+              decoration: const BoxDecoration(),
+              child: const Center(
+                child: Icon(
+                  FluentIcons.add_24_filled,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Text(
+              'Post an Ad',
+              style: TextStyle(
+                color: Colors.white, // White
+                fontSize: 16,
+                fontFamily: 'Geist',
+                fontWeight: FontWeight.w500,
+                height: 1.50,
               ),
             ),
           ],

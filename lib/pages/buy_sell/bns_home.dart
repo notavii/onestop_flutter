@@ -61,35 +61,31 @@ class _BuySellHomeState extends State<BuySellHome> {
           appBar: AppBar(
             backgroundColor: OColor.white,
             title: Text(
-              "Buy and Sell", 
+              "Buy and Sell",
               style: TextStyle(
                 fontFamily: "Geist",
                 fontSize: 18,
                 height: 1,
                 fontWeight: FontWeight.w500,
                 color: OColor.gray800,
-              )),
+              ),
+            ),
             elevation: 0,
             automaticallyImplyLeading: false,
             centerTitle: true,
-              leading: BackButton(
+            leading: BackButton(
               color: Colors.green,
               onPressed: () {
-              Navigator.of(context).pop();
-            },
-             ),
+                Navigator.of(context).pop();
+              },
+            ),
 
-            actions: const[
-              SizedBox(width: 48,)
-            ],
+            actions: const [SizedBox(width: 48)],
 
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(1),
-              child:Container(
-                color: Color(0xFFE9E9EA),
-                height: 1,
-              ) ),
-
+              child: Container(color: Color(0xFFE9E9EA), height: 1),
+            ),
           ),
           body: Column(
             children: [
@@ -101,16 +97,29 @@ class _BuySellHomeState extends State<BuySellHome> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   spacing: 8,
                   children: [
-                    Expanded(child: ItemType2(commonStore: commonStore, title: "Sell", label: "For Sale")),
-                    Expanded(child: ItemType2(commonStore: commonStore, title: "Buy", label: "Requested Item")),
+                    Expanded(
+                      child: ItemType2(
+                        commonStore: commonStore,
+                        title: "Sell",
+                        label: "For Sale",
+                      ),
+                    ),
+                    Expanded(
+                      child: ItemType2(
+                        commonStore: commonStore,
+                        title: "Buy",
+                        label: "Requested Item",
+                      ),
+                    ),
                   ],
                 ),
               ),
+
               // SizedBox(height:24 ),
-
-
-              OSearchBar(controller: _searchcontroller,content: "Search Products",),
-              
+              OSearchBar(
+                controller: _searchcontroller,
+                content: "Search Products",
+              ),
 
               Expanded(
                 child: CustomScrollView(
@@ -133,18 +142,15 @@ class _BuySellHomeState extends State<BuySellHome> {
                 ),
               ),
             ],
-
-            
           ),
-
-          
-          
-
-
 
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           floatingActionButton:
-              LoginStore().isGuestUser ? Container() : AddItemButton(type: commonStore.bnsIndex),
+              LoginStore().isGuestUser
+                  ? Container()
+                  : AddItemButton(
+                    type: commonStore.bnsIndex,
+                  ),
         );
       },
     );
@@ -160,7 +166,8 @@ class _BuySellHomeState extends State<BuySellHome> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<BuyModel> models = snapshot.data!;
-            List<MyAdsTile> tiles = models.map((e) => MyAdsTile(model: e)).toList();
+            List<MyAdsTile> tiles =
+                models.map((e) => MyAdsTile(model: e)).toList();
 
             if (tiles.isEmpty || LoginStore().isGuestUser) {
               return const SizedBox();
@@ -173,7 +180,10 @@ class _BuySellHomeState extends State<BuySellHome> {
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 18.0),
-                      child: Text("My Ads", style: OneStopStyles.basicFontStyle.setColor(kWhite)),
+                      child: Text(
+                        "My Ads",
+                        style: OneStopStyles.basicFontStyle.setColor(kWhite),
+                      ),
                     ),
                   ),
                   ListView.builder(
@@ -205,21 +215,28 @@ class _BuySellHomeState extends State<BuySellHome> {
           builderDelegate: PagedChildBuilderDelegate(
             itemBuilder: (context, buyItem, index) => BuyTile(model: buyItem),
             firstPageErrorIndicatorBuilder:
-                (context) => ErrorReloadScreen(reloadCallback: () => _buyController.refresh()),
-            noItemsFoundIndicatorBuilder: (context) => const PaginationText(text: "No items found"),
+                (context) => ErrorReloadScreen(
+                  reloadCallback: () => _buyController.refresh(),
+                ),
+            noItemsFoundIndicatorBuilder:
+                (context) => const PaginationText(text: "No items found"),
             newPageErrorIndicatorBuilder:
                 (context) => Padding(
                   padding: const EdgeInsets.all(10),
-                  child: ErrorReloadButton(reloadCallback: () => _buyController.refresh()),
+                  child: ErrorReloadButton(
+                    reloadCallback: () => _buyController.refresh(),
+                  ),
                 ),
             newPageProgressIndicatorBuilder:
                 (context) => const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Center(child: CircularProgressIndicator()),
                 ),
-            firstPageProgressIndicatorBuilder: (context) => ListShimmer(count: 5, height: 120),
+            firstPageProgressIndicatorBuilder:
+                (context) => ListShimmer(count: 5, height: 120),
             noMoreItemsIndicatorBuilder:
-                (context) => const PaginationText(text: "You've reached the end"),
+                (context) =>
+                    const PaginationText(text: "You've reached the end"),
           ),
         );
       },
@@ -236,21 +253,28 @@ class _BuySellHomeState extends State<BuySellHome> {
           builderDelegate: PagedChildBuilderDelegate(
             itemBuilder: (context, sellItem, index) => BuyTile(model: sellItem),
             firstPageErrorIndicatorBuilder:
-                (context) => ErrorReloadScreen(reloadCallback: () => _sellController.refresh()),
-            noItemsFoundIndicatorBuilder: (context) => const PaginationText(text: "No items found"),
+                (context) => ErrorReloadScreen(
+                  reloadCallback: () => _sellController.refresh(),
+                ),
+            noItemsFoundIndicatorBuilder:
+                (context) => const PaginationText(text: "No items found"),
             newPageErrorIndicatorBuilder:
                 (context) => Padding(
                   padding: const EdgeInsets.all(10),
-                  child: ErrorReloadButton(reloadCallback: () => _sellController.refresh()),
+                  child: ErrorReloadButton(
+                    reloadCallback: () => _sellController.refresh(),
+                  ),
                 ),
             newPageProgressIndicatorBuilder:
                 (context) => const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Center(child: CircularProgressIndicator()),
                 ),
-            firstPageProgressIndicatorBuilder: (context) => ListShimmer(count: 5, height: 120),
+            firstPageProgressIndicatorBuilder:
+                (context) => ListShimmer(count: 5, height: 120),
             noMoreItemsIndicatorBuilder:
-                (context) => const PaginationText(text: "You've reached the end"),
+                (context) =>
+                    const PaginationText(text: "You've reached the end"),
           ),
         );
       },
@@ -266,7 +290,12 @@ class _BuySellHomeState extends State<BuySellHome> {
 }
 
 class ItemType2 extends StatelessWidget {
-  const ItemType2({super.key, required this.commonStore, required this.title,  required this.label});
+  const ItemType2({
+    super.key,
+    required this.commonStore,
+    required this.title,
+    required this.label,
+  });
 
   final CommonStore commonStore;
   final String title;
@@ -278,36 +307,40 @@ class ItemType2 extends StatelessWidget {
       onTap: () {
         commonStore.setBnsIndex(title);
       },
-      child:  Container(
+      child: Container(
         decoration: ShapeDecoration(
-                          color:commonStore.bnsIndex == title ? OColor.gray200:Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                          ),
-                      ),
-        
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        spacing: 6,
-                        children: [
-                            Text(
-                                label,
-                                style: TextStyle(
-                                    color:commonStore.bnsIndex == title ?  OColor.green600 : OColor.gray600/* Colors-Gray-600 */,
-                                    fontSize: 14,
-                                    fontFamily: 'Geist',
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.43,
-                                ),
-                            ),
-                        ],
-                    ),
-                ),
+          color:
+              commonStore.bnsIndex == title
+                  ? OColor.gray200
+                  : Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          spacing: 6,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                color:
+                    commonStore.bnsIndex == title
+                        ? OColor.green600
+                        : OColor.gray600 /* Colors-Gray-600 */,
+                fontSize: 14,
+                fontFamily: 'Geist',
+                fontWeight: FontWeight.w500,
+                height: 1.43,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
-
-
