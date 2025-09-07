@@ -15,6 +15,7 @@ import 'package:onestop_dev/widgets/lostfound/add_item_button.dart';
 import 'package:onestop_dev/widgets/lostfound/ads_tile.dart';
 import 'package:onestop_dev/widgets/ui/list_shimmer.dart';
 import 'package:onestop_kit/onestop_kit.dart';
+import 'package:onestop_ui/index.dart';
 import 'package:provider/provider.dart';
 
 class BuySellHome extends StatefulWidget {
@@ -27,6 +28,7 @@ class BuySellHome extends StatefulWidget {
 }
 
 class _BuySellHomeState extends State<BuySellHome> {
+  final TextEditingController _searchcontroller = TextEditingController();
   final PagingController<int, BuyModel> _sellController = PagingController(
     fetchPage: (pageKey) {
       return BnsRepository().getSellPage(pageKey);
@@ -50,37 +52,66 @@ class _BuySellHomeState extends State<BuySellHome> {
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
     var commonStore = context.read<CommonStore>();
 
     return Observer(
       builder: (BuildContext context) {
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: kBlueGrey,
-            title: Text("Buy and Sell", style: OnestopFonts.w500.size(20).setColor(kWhite)),
+            backgroundColor: OColor.white,
+            title: Text(
+              "Buy and Sell", 
+              style: TextStyle(
+                fontFamily: "Geist",
+                fontSize: 18,
+                height: 1,
+                fontWeight: FontWeight.w500,
+                color: OColor.gray800,
+              )),
             elevation: 0,
             automaticallyImplyLeading: false,
-            leadingWidth: 18,
-            actions: [
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(FluentIcons.dismiss_24_filled, color: kWhite2),
-              ),
+            centerTitle: true,
+              leading: BackButton(
+              color: Colors.green,
+              onPressed: () {
+              Navigator.of(context).pop();
+            },
+             ),
+
+            actions: const[
+              SizedBox(width: 48,)
             ],
+
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(1),
+              child:Container(
+                color: Color(0xFFE9E9EA),
+                height: 1,
+              ) ),
+
           ),
           body: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 10.0, top: 15.0),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 8,
                   children: [
-                    ItemType2(commonStore: commonStore, title: "Sell", label: "For Sale"),
-                    ItemType2(commonStore: commonStore, title: "Buy", label: "Requested Item"),
+                    Expanded(child: ItemType2(commonStore: commonStore, title: "Sell", label: "For Sale")),
+                    Expanded(child: ItemType2(commonStore: commonStore, title: "Buy", label: "Requested Item")),
                   ],
                 ),
               ),
+              // SizedBox(height:24 ),
+
+
+              OSearchBar(controller: _searchcontroller,content: "Search Products",),
+              
+
               Expanded(
                 child: CustomScrollView(
                   slivers: [
@@ -102,7 +133,15 @@ class _BuySellHomeState extends State<BuySellHome> {
                 ),
               ),
             ],
+
+            
           ),
+
+          
+          
+
+
+
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           floatingActionButton:
               LoginStore().isGuestUser ? Container() : AddItemButton(type: commonStore.bnsIndex),
@@ -227,11 +266,11 @@ class _BuySellHomeState extends State<BuySellHome> {
 }
 
 class ItemType2 extends StatelessWidget {
-  const ItemType2({super.key, required this.commonStore, required this.title, this.label});
+  const ItemType2({super.key, required this.commonStore, required this.title,  required this.label});
 
   final CommonStore commonStore;
   final String title;
-  final String? label;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -239,14 +278,36 @@ class ItemType2 extends StatelessWidget {
       onTap: () {
         commonStore.setBnsIndex(title);
       },
-      child: ItemTypeBar(
-        text: label ?? title,
-        margin: const EdgeInsets.only(left: 8, bottom: 10),
-        textStyle: OnestopFonts.w500
-            .size(14)
-            .setColor(commonStore.bnsIndex == title ? kBlack : kWhite),
-        backgroundColor: commonStore.bnsIndex == title ? lBlue2 : kBlueGrey,
-      ),
+      child:  Container(
+        decoration: ShapeDecoration(
+                          color:commonStore.bnsIndex == title ? OColor.gray200:Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                          ),
+                      ),
+        
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        spacing: 6,
+                        children: [
+                            Text(
+                                label,
+                                style: TextStyle(
+                                    color:commonStore.bnsIndex == title ?  OColor.green600 : OColor.gray600/* Colors-Gray-600 */,
+                                    fontSize: 14,
+                                    fontFamily: 'Geist',
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.43,
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
     );
   }
 }
+
+
