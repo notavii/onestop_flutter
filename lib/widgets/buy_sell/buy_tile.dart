@@ -3,6 +3,7 @@ import 'package:onestop_dev/functions/food/rest_frame_builder.dart';
 import 'package:onestop_dev/globals/my_colors.dart';
 import 'package:onestop_dev/globals/my_fonts.dart';
 import 'package:onestop_kit/onestop_kit.dart';
+import 'package:onestop_ui/utils/colors.dart';
 
 import 'details_dialog.dart';
 
@@ -20,82 +21,72 @@ class BuyTile extends StatelessWidget {
       onTap: () {
         detailsDialogBox(context, model);
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 5.0),
-        child: Container(
-          height: 115,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(21),
-            color: kBlueGrey,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Expanded(
-                flex: 6,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 2.0, 3.0, 2.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 4,
-                              child: Text(
-                                model.title,
-                                style: MyFonts.w600.size(16).setColor(kWhite),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                model.description,
-                                style: MyFonts.w500.size(12).setColor(kGrey6),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                '\u{20B9}${model.price}/-',
-                                style: MyFonts.w600.size(14).setColor(lBlue4),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+          decoration: ShapeDecoration( 
+            color: OColor.white,
+            shape: RoundedRectangleBorder(
+              side:  BorderSide(
+                width: 1,
+                color: OColor.gray200
+                
               ),
-              Expanded(
-                flex: 4,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(21),
-                      bottomRight: Radius.circular(21)),
-                  child: Image.network(
+              borderRadius: BorderRadius.circular(8)
+            ),
+            
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                  height: 171,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  clipBehavior: Clip.antiAlias,
+                  decoration:  BoxDecoration(
+                    color: OColor.gray100,
+                    
+                  ),
+
+
+                  
+                    
+                    child: Image.network(
                     model.imageURL,
                     fit: BoxFit.cover,
-                    cacheWidth: 100,
+                    cacheWidth: 300,
                     frameBuilder: restaurantTileFrameBuilder,
-                    errorBuilder: (_, _, _) => Container(),
+                    errorBuilder: (_, _, _) => Container(color: OColor.gray400),
+                        ),
+                    ),
+                   
+                 
+                
+
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          model.title,
+                          style: MyFonts.w500.size(14).setColor(OColor.gray800),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                              ),
+                      const SizedBox(height: 4,),
+                     
+                            
+                      Text(
+                            '\u{20B9}${model.price}',
+                              style: MyFonts.w500.size(16).setColor(OColor.gray800),
+                              ),
+                    ],
                   ),
-                ),
-              ),
+              )
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }

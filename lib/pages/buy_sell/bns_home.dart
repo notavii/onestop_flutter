@@ -189,10 +189,16 @@ class _BuySellHomeState extends State<BuySellHome> {
     return PagingListener(
       controller: _buyController,
       builder: (context, state, fetchNextPage) {
-        return PagedSliverList<int, SellModel>(
+        return PagedSliverGrid<int, SellModel>(
           state: state,
           fetchNextPage: fetchNextPage,
-          builderDelegate: PagedChildBuilderDelegate(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.7,
+            ),
+            builderDelegate: PagedChildBuilderDelegate(
             itemBuilder: (context, buyItem, index) => BuyTile(model: buyItem),
             firstPageErrorIndicatorBuilder:
                 (context) => ErrorReloadScreen(reloadCallback: () => _buyController.refresh()),
@@ -212,7 +218,8 @@ class _BuySellHomeState extends State<BuySellHome> {
                 (context) => ListShimmer(count: 5, height: 120),
             noMoreItemsIndicatorBuilder:
                 (context) => const PaginationText(text: "You've reached the end"),
-          ),
+          
+        )
         );
       },
     );
@@ -222,9 +229,15 @@ class _BuySellHomeState extends State<BuySellHome> {
     return PagingListener(
       controller: _sellController,
       builder: (context, state, fetchNextPage) {
-        return PagedSliverList<int, BuyModel>(
+        return PagedSliverGrid<int, BuyModel>(
           state: state,
           fetchNextPage: fetchNextPage,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.7,
+          ),
           builderDelegate: PagedChildBuilderDelegate(
             itemBuilder: (context, sellItem, index) => BuyTile(model: sellItem),
             firstPageErrorIndicatorBuilder:
