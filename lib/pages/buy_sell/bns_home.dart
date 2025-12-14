@@ -13,16 +13,18 @@ import 'package:onestop_dev/widgets/buy_sell/buy_tile.dart';
 import 'package:onestop_dev/widgets/buy_sell/item_type_bar.dart';
 import 'package:onestop_dev/widgets/lostfound/add_item_button.dart';
 import 'package:onestop_dev/widgets/lostfound/ads_tile.dart';
+import 'package:onestop_dev/widgets/mapbox/map_box.dart';
 import 'package:onestop_dev/widgets/ui/list_shimmer.dart';
 import 'package:onestop_kit/onestop_kit.dart';
 import 'package:onestop_ui/index.dart';
 import 'package:provider/provider.dart';
+import 'myads_page.dart';
+
+
 
 class BuySellHome extends StatefulWidget {
   static const id = "/buySellHome";
-
   const BuySellHome({super.key});
-
   @override
   State<BuySellHome> createState() => _BuySellHomeState();
 }
@@ -37,7 +39,6 @@ class _BuySellHomeState extends State<BuySellHome> {
       return state.lastPageIsEmpty ? null : state.nextIntPageKey;
     },
   );
-
   final PagingController<int, SellModel> _buyController = PagingController(
     fetchPage: (pageKey) {
       return BnsRepository().getBuyPage(pageKey);
@@ -52,7 +53,6 @@ class _BuySellHomeState extends State<BuySellHome> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
     var commonStore = context.read<CommonStore>();
 
     return Observer(
@@ -79,12 +79,10 @@ class _BuySellHomeState extends State<BuySellHome> {
                 Navigator.of(context).pop();
               },
             ),
-
             actions: const [SizedBox(width: 48)],
-
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(1),
-              child: Container(color: Color(0xFFE9E9EA), height: 1),
+              child: Container(color: const Color(0xFFE9E9EA), height: 1),
             ),
           ),
           body: Column(
@@ -95,7 +93,6 @@ class _BuySellHomeState extends State<BuySellHome> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  spacing: 8,
                   children: [
                     Expanded(
                       child: ItemType2(
@@ -114,17 +111,20 @@ class _BuySellHomeState extends State<BuySellHome> {
                   ],
                 ),
               ),
-
-              // SizedBox(height:24 ),
               OSearchBar(
                 controller: _searchcontroller,
                 content: "Search Products",
               ),
-
               Expanded(
                 child: CustomScrollView(
                   slivers: [
-                    _listMyAds(commonStore),
+                   
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 18.0),
+                        child:Text("$now"),
+                      ),
+                    ),
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 18.0),
@@ -143,65 +143,45 @@ class _BuySellHomeState extends State<BuySellHome> {
               ),
             ],
           ),
-
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-          floatingActionButton:
-              LoginStore().isGuestUser
-                  ? Container()
-                  : AddItemButton(
-                    type: commonStore.bnsIndex,
+          floatingActionButton: LoginStore().isGuestUser
+              ? null
+              : SafeArea(
+                  minimum: const EdgeInsets.only(right: 8, bottom: 8),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      AddItemButton(type: commonStore.bnsIndex),
+                      const SizedBox(height: 6),
+                      SecondaryButton(
+                        label: "My Ads",
+                        leadingIcon: FluentIcons.door_tag_20_filled,
+                        bgColor: Colors.white,
+                        labelStyle: const TextStyle(
+                          color: Color(0xFF148440),
+                          fontFamily: 'Geist',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          height: 1.5,
+                        ),
+                        iconColor: Color(0xFF148440),
+                        height: 58,
+                        width: 132,
+                        onPressed: () {
+                          // Navigate to user's ads list page or show a filtered dialog
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => MyAdsPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
+                ),
         );
       },
-    );
-  }
-
-  SliverToBoxAdapter _listMyAds(CommonStore commonStore) {
-    return SliverToBoxAdapter(
-      child: FutureBuilder(
-        future: BnsRepository().getBnsMyItems(
-          LoginStore.userData['outlookEmail']!,
-          commonStore.bnsIndex == "Sell",
-        ),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<BuyModel> models = snapshot.data!;
-            List<MyAdsTile> tiles =
-                models.map((e) => MyAdsTile(model: e)).toList();
-
-            if (tiles.isEmpty || LoginStore().isGuestUser) {
-              return const SizedBox();
-            }
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 18.0),
-                      child: Text(
-                        "My Ads",
-                        style: OneStopStyles.basicFontStyle.setColor(kWhite),
-                      ),
-                    ),
-                  ),
-                  ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) => tiles[index],
-                    itemCount: tiles.length,
-                  ),
-                ],
-              ),
-            );
-          }
-          if (snapshot.hasError) {
-            return ErrorReloadScreen(reloadCallback: callSetState);
-          }
-          return ListShimmer(count: 5, height: 120);
-        },
-      ),
     );
   }
 
@@ -215,28 +195,23 @@ class _BuySellHomeState extends State<BuySellHome> {
           builderDelegate: PagedChildBuilderDelegate(
             itemBuilder: (context, buyItem, index) => BuyTile(model: buyItem),
             firstPageErrorIndicatorBuilder:
-                (context) => ErrorReloadScreen(
-                  reloadCallback: () => _buyController.refresh(),
-                ),
+                (context) => ErrorReloadScreen(reloadCallback: () => _buyController.refresh()),
             noItemsFoundIndicatorBuilder:
                 (context) => const PaginationText(text: "No items found"),
             newPageErrorIndicatorBuilder:
                 (context) => Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: ErrorReloadButton(
-                    reloadCallback: () => _buyController.refresh(),
-                  ),
-                ),
+                      padding: const EdgeInsets.all(10),
+                      child: ErrorReloadButton(reloadCallback: () => _buyController.refresh()),
+                    ),
             newPageProgressIndicatorBuilder:
                 (context) => const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
+                      padding: EdgeInsets.all(8.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
             firstPageProgressIndicatorBuilder:
                 (context) => ListShimmer(count: 5, height: 120),
             noMoreItemsIndicatorBuilder:
-                (context) =>
-                    const PaginationText(text: "You've reached the end"),
+                (context) => const PaginationText(text: "You've reached the end"),
           ),
         );
       },
@@ -253,28 +228,23 @@ class _BuySellHomeState extends State<BuySellHome> {
           builderDelegate: PagedChildBuilderDelegate(
             itemBuilder: (context, sellItem, index) => BuyTile(model: sellItem),
             firstPageErrorIndicatorBuilder:
-                (context) => ErrorReloadScreen(
-                  reloadCallback: () => _sellController.refresh(),
-                ),
+                (context) => ErrorReloadScreen(reloadCallback: () => _sellController.refresh()),
             noItemsFoundIndicatorBuilder:
                 (context) => const PaginationText(text: "No items found"),
             newPageErrorIndicatorBuilder:
                 (context) => Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: ErrorReloadButton(
-                    reloadCallback: () => _sellController.refresh(),
-                  ),
-                ),
+                      padding: const EdgeInsets.all(10),
+                      child: ErrorReloadButton(reloadCallback: () => _sellController.refresh()),
+                    ),
             newPageProgressIndicatorBuilder:
                 (context) => const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
+                      padding: EdgeInsets.all(8.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
             firstPageProgressIndicatorBuilder:
                 (context) => ListShimmer(count: 5, height: 120),
             noMoreItemsIndicatorBuilder:
-                (context) =>
-                    const PaginationText(text: "You've reached the end"),
+                (context) => const PaginationText(text: "You've reached the end"),
           ),
         );
       },
@@ -289,6 +259,7 @@ class _BuySellHomeState extends State<BuySellHome> {
   }
 }
 
+// The ItemType2 widget code is unchanged; keep as-is.
 class ItemType2 extends StatelessWidget {
   const ItemType2({
     super.key,
@@ -309,29 +280,25 @@ class ItemType2 extends StatelessWidget {
       },
       child: Container(
         decoration: ShapeDecoration(
-          color:
-              commonStore.bnsIndex == title
-                  ? OColor.gray200
-                  : Colors.transparent,
+          color: commonStore.bnsIndex == title
+              ? OColor.gray200
+              : Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
         ),
-
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: 6,
           children: [
             Text(
               label,
               style: TextStyle(
-                color:
-                    commonStore.bnsIndex == title
-                        ? OColor.green600
-                        : OColor.gray600 /* Colors-Gray-600 */,
+                color: commonStore.bnsIndex == title
+                    ? OColor.green600
+                    : OColor.gray600, // Colors-Gray-600
                 fontSize: 14,
                 fontFamily: 'Geist',
                 fontWeight: FontWeight.w500,
